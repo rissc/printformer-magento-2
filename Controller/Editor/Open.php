@@ -186,6 +186,14 @@ class Open extends Action
      */
     public function execute()
     {
+        $refererUrl = $this->_redirect->getRefererUrl();
+        if (strpos($refererUrl ?? '', "wishlist")) {
+            $this->_sessionHelper->setWishlistUrl($refererUrl);
+        }
+        if (strpos($refererUrl ?? '', "design")) {
+            $this->_sessionHelper->setDesignUrl($refererUrl);
+        }
+
         if (!$this->_getParam('shopframe')) {
             if ($redirect = $this->_niceUrl()) {
                 return $redirect;
@@ -250,11 +258,6 @@ class Open extends Action
         /** @var Product $product */
         $product = $this->_productFactory->create()->load($productId);
         $this->_sessionHelper->setCurrentIntent($intent);
-        $this->_sessionHelper->unsetWishlistUrl();
-        $refererUrl = $this->_redirect->getRefererUrl();
-        if (strpos($refererUrl ?? '', "wishlist")) {
-            $this->_sessionHelper->setWishlistUrl($refererUrl);
-        }
 
         /**
          * Try to load draft from database

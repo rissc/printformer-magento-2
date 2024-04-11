@@ -2,6 +2,7 @@
 
 namespace Rissc\Printformer\Plugin\Sales;
 
+use Magento\Customer\Api\GroupRepositoryInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Model\Order as OrderModel;
 use Magento\Sales\Model\ResourceModel\Order;
@@ -49,13 +50,18 @@ class OrderResourceModel
     private $external;
 
     /**
-     * OrderResourceModel constructor.
+     * @var GroupRepositoryInterface
+     */
+    protected $groupRepository;
+
+    /**
      * @param Api $api
      * @param Config $config
      * @param Draft $draft
      * @param DraftFactory $draftFactory
      * @param LoggerInterface $logger
      * @param External $external
+     * @param GroupRepositoryInterface $groupRepository
      */
     public function __construct(
         Api $api,
@@ -63,7 +69,8 @@ class OrderResourceModel
         Draft $draft,
         DraftFactory $draftFactory,
         LoggerInterface $logger,
-        External $external
+        External $external,
+        GroupRepositoryInterface $groupRepository
     ) {
         $this->api = $api;
         $this->config = $config;
@@ -71,6 +78,7 @@ class OrderResourceModel
         $this->draftFactory = $draftFactory;
         $this->logger = $logger;
         $this->external = $external;
+        $this->groupRepository = $groupRepository;
     }
 
     /**
@@ -88,6 +96,7 @@ class OrderResourceModel
         try {
             $incrementOrderId = $orderModel->getIncrementId();
             $processingPermitted = $this->api->isOrderStateValidToProcess($orderModel->getStatus());
+            $customerGroupId = $orderModel->getCustomerGroupId();
 
             foreach ($orderModel->getAllItems() as $item) {
                 if($item->getProductType() == 'downloadable'){
@@ -110,7 +119,8 @@ class OrderResourceModel
                             ->save();
 
                         if ($this->config->getOrderDraftUpdate($item->getStoreId())){
-                            $this->api->updateDraftHash($draftId, $incrementOrderId);
+                            $groupNumber = $this->getGroupNumber($customerGroupId);
+                            $this->api->updateDraftHash($draftId, $incrementOrderId, $item->getStoreId(), $groupNumber);
                         }
                     }
                 }
@@ -144,5 +154,17 @@ class OrderResourceModel
         }
 
         return $result;
+    }
+
+    /**
+     * @param $groupId
+     * @return mixed|string|void
+     */
+    public function getGroupNumber($groupId){
+        try {
+            $group = $this->groupRepository->getById($groupId);
+            list($number) = explode("_", $group->getCode());
+            return $number;
+        } catch (\Exception $e) {}
     }
 }

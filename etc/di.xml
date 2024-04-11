@@ -119,4 +119,17 @@
     <type name="Magento\Checkout\Model\DefaultConfigProvider">
         <plugin name="csrf_validator_skip" type="Rissc\Printformer\Plugin\Checkout\Model\DefaultConfigProvider" />
     </type>
+    <type name="Rissc\Printformer\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Rissc\Printformer\Logger\PrintformerLogger">
+        <arguments>
+            <argument name="name" xsi:type="string">PrintformerLogger</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">Rissc\Printformer\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

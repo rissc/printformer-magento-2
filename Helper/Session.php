@@ -17,6 +17,7 @@ class Session extends AbstractHelper
     const SESSION_KEY_PRINTFORMER_DRAFTID = InstallSchema::COLUMN_NAME_DRAFTID;
     const SESSION_KEY_PRINTFORMER_CURRENT_INTENT = 'printformer_current_intent';
     const SESSION_KEY_WISHLIST_URL = 'wishlist_url';
+    const SESSION_KEY_DESIGN_URL = 'design_url';
 
     /**
      * @var CatalogSession
@@ -503,6 +504,33 @@ class Session extends AbstractHelper
     {
         if ($this->catalogSession->getData(self::SESSION_KEY_WISHLIST_URL)) {
             return $this->catalogSession->getData(self::SESSION_KEY_WISHLIST_URL);
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $designUrl
+     * @return void
+     */
+    public function setDesignUrl($designUrl)
+    {
+        if ($designUrl != $this->catalogSession->getData(self::SESSION_KEY_DESIGN_URL)) {
+            $this->catalogSession->setData(self::SESSION_KEY_DESIGN_URL, $designUrl);
+        }
+    }
+
+    public function unsetDesignUrl()
+    {
+        if ($this->catalogSession->getData(self::SESSION_KEY_DESIGN_URL)) {
+            $this->catalogSession->setData(self::SESSION_KEY_DESIGN_URL, null);
+        }
+    }
+
+    public function getDesignUrl()
+    {
+        if ($this->catalogSession->getData(self::SESSION_KEY_DESIGN_URL)) {
+            return $this->catalogSession->getData(self::SESSION_KEY_DESIGN_URL);
         }
 
         return null;
