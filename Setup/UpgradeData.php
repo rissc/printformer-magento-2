@@ -538,6 +538,7 @@ class UpgradeData implements UpgradeDataInterface
                 $storeId
             );
             $this->logger->critical($errorMessage, ['exception' => $e]);
+            $lastUpdatedList = [];
         }
 
         return $lastUpdatedList;
